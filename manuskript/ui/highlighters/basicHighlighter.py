@@ -62,13 +62,15 @@ class BasicHighlighter(QSyntaxHighlighter):
             'whitespace' : QColor(192, 192, 192)            # silver
         }
 
-    def setDefaultBlockFormat(self, bf):
+    def setDefaultBlockFormat(self, bf, rehighlight=True):
         self._defaultBlockFormat = bf
-        self.rehighlight()
+        if rehighlight:
+            self.rehighlight()
 
-    def setDefaultCharFormat(self, cf):
+    def setDefaultCharFormat(self, cf, rehighlight=True):
         self._defaultCharFormat = cf
-        self.rehighlight()
+        if rehighlight:
+            self.rehighlight()
 
     def setMisspelledColor(self, color):
         self._errorColors['misspelled'] = color

@@ -128,7 +128,10 @@ class textEditView(QTextEdit):
                 self.setModel(index.model())
 
             self.setupEditorForIndex(self._index)
-            self.loadFontSettings()
+            # Skip the highlighter's rehighlight here: it would run on the
+            # chapter we're switching away from. updateText() below loads
+            # the new content, which triggers the highlighter naturally.
+            self.loadFontSettings(rehighlightNow=False)
             self.updateText()
 
         else:
@@ -169,13 +172,17 @@ class textEditView(QTextEdit):
         self.updateText()
 
     def setupEditorForIndex(self, index):
-        # Setting highlighter
-        if self._highlighting:
+        # Setting highlighter. The document is reused across chapter
+        # switches, so the highlighter only needs to be created once;
+        # recreating it on every switch left the old QSyntaxHighlighter
+        # instances alive (still attached to the document) and forced
+        # several redundant full-document rehighlights per switch.
+        if self._highlighting and not self.highlighter:
             self.highlighter = self._highlighterClass(self)
             self.highlighter.setDefaultBlockFormat(self._defaultBlockFormat)
             self.highlighter.updateColorScheme()
 
-    def loadFontSettings(self):
+    def loadFontSettings(self, rehighlightNow=True):
         if self._fromTheme or \
             not self._index or \
                 type(self._index.model()) != outlineModel or \
@@ -246,10 +253,10 @@ class textEditView(QTextEdit):
         self._defaultBlockFormat = bf
 
         if self.highlighter:
-            self.highlighter.updateColorScheme()
+            self.highlighter.updateColorScheme(rehighlight=rehighlightNow)
             self.highlighter.setMisspelledColor(QColor(opt["misspelled"]))
-            self.highlighter.setDefaultCharFormat(self._defaultCharFormat)
-            self.highlighter.setDefaultBlockFormat(self._defaultBlockFormat)
+            self.highlighter.setDefaultCharFormat(self._defaultCharFormat, rehighlight=rehighlightNow)
+            self.highlighter.setDefaultBlockFormat(self._defaultBlockFormat, rehighlight=rehighlightNow)
 
     def update(self, topLeft, bottomRight):
         update = False

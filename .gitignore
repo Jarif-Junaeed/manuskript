@@ -14,6 +14,7 @@
 .pydevproject
 .python-version
 .settings/org.eclipse.core.resources.prefs
+.venv
 .vscode
 .vimrc
 ExportTest
