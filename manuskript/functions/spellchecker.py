@@ -578,7 +578,15 @@ class LanguageToolDictionary(BasicDictionary):
     def getTool():
         if LanguageToolDictionary._tool == None:
             try:
-                LanguageToolDictionary._tool = languagetool.LanguageTool()
+                # Passing no language lets languagetool auto-detect one from
+                # the OS locale via Python's locale module, which on Windows
+                # returns verbose names like "English_United States" that
+                # language_tool_python's tag parser doesn't recognize and
+                # raises on. QLocale.system().name() gives a normalized tag
+                # (e.g. "en_US") that works on every platform instead, and
+                # routing through getToolForLanguage() reuses the same
+                # instance/server if that language is requested elsewhere.
+                LanguageToolDictionary._tool = LanguageToolDictionary.getToolForLanguage(QLocale.system().name())
             except:
                 return None
 
@@ -591,6 +599,11 @@ class LanguageToolDictionary(BasicDictionary):
         # instances must be reused instead of created per dictionary object
         # (which previously happened on every chapter switch / dictionary
         # lookup and multiplied downloads and background server processes).
+        # "en_US" (Qt-style) and "en-US" (languagetool-style) refer to the
+        # same language tag but are different dict keys, so normalize before
+        # caching to avoid starting a redundant server for the same language.
+        lang = lang.replace('_', '-')
+
         if lang not in LanguageToolDictionary._toolsByLanguage:
             LanguageToolDictionary._toolsByLanguage[lang] = languagetool.LanguageTool(lang)
 
