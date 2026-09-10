@@ -563,6 +563,7 @@ def get_languagetool_locale_language():
 class LanguageToolDictionary(BasicDictionary):
 
     _tool = None
+    _toolsByLanguage = {}
 
     def __init__(self, name):
         BasicDictionary.__init__(self, name)
@@ -570,7 +571,7 @@ class LanguageToolDictionary(BasicDictionary):
         if not (self._lang and self._lang in get_languagetool_languages(self.getTool())):
             self._lang = self.getDefaultDictionary()
 
-        self.tool = languagetool.LanguageTool(self._lang)
+        self.tool = LanguageToolDictionary.getToolForLanguage(self._lang)
         self._cache = {}
 
     @staticmethod
@@ -582,6 +583,18 @@ class LanguageToolDictionary(BasicDictionary):
                 return None
 
         return LanguageToolDictionary._tool
+
+    @staticmethod
+    def getToolForLanguage(lang):
+        # Each languagetool.LanguageTool() instance downloads/verifies the
+        # LanguageTool install and spawns its own local checking server, so
+        # instances must be reused instead of created per dictionary object
+        # (which previously happened on every chapter switch / dictionary
+        # lookup and multiplied downloads and background server processes).
+        if lang not in LanguageToolDictionary._toolsByLanguage:
+            LanguageToolDictionary._toolsByLanguage[lang] = languagetool.LanguageTool(lang)
+
+        return LanguageToolDictionary._toolsByLanguage[lang]
 
     @staticmethod
     def getLibraryName():
