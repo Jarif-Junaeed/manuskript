@@ -17,6 +17,7 @@
 .venv
 .vscode
 .vimrc
+rebuild-and-swap.ps1
 ExportTest
 Notes.t2t
 dist
