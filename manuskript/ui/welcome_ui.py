@@ -27,7 +27,6 @@ class Ui_welcome(object):
         self.horizontalLayout_23 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_23.setObjectName("horizontalLayout_23")
         self.tree = QtWidgets.QTreeWidget(self.frame_2)
-        self.tree.setMaximumSize(QtCore.QSize(150, 16777215))
         self.tree.setRootIsDecorated(False)
         self.tree.setObjectName("tree")
         item_0 = QtWidgets.QTreeWidgetItem(self.tree)

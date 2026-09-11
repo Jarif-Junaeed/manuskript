@@ -434,6 +434,22 @@ class welcome(QWidget, Ui_welcome):
 
         self.tree.expandAll()
 
+        # Size the tree to fit its widest item's text instead of a fixed
+        # pixel width: default UI fonts differ enough between platforms
+        # (e.g. Windows vs. GNOME/Ubuntu) that a hardcoded width clips text
+        # on some of them. Clamp between a sane floor and ceiling so a long
+        # sample-project filename can't blow up the panel.
+        # stretchLastSection defaults to True, which makes a single-column
+        # tree's column always fill the widget's current width regardless
+        # of content, so resizeColumnToContents() is a no-op until this is
+        # disabled.
+        self.tree.header().setStretchLastSection(False)
+        self.tree.resizeColumnToContents(0)
+        width = self.tree.columnWidth(0) + 2 * self.tree.frameWidth() + 20
+        width = max(150, min(width, 260))
+        self.tree.setMinimumWidth(width)
+        self.tree.setMaximumWidth(width)
+
     def loadDefaultDatas(self):
         """Initialize a basic Manuskript project."""
 

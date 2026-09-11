@@ -33,12 +33,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout_23">
         <item>
          <widget class="QTreeWidget" name="tree">
-          <property name="maximumSize">
-           <size>
-            <width>150</width>
-            <height>16777215</height>
-           </size>
-          </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
