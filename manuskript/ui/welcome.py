@@ -449,6 +449,10 @@ class welcome(QWidget, Ui_welcome):
         width = max(150, min(width, 260))
         self.tree.setMinimumWidth(width)
         self.tree.setMaximumWidth(width)
+        # Turn stretch back on now that the widget's width is set, so the
+        # single column (and the category headers' background color) still
+        # fills the full width instead of leaving blank space on the right.
+        self.tree.header().setStretchLastSection(True)
 
     def loadDefaultDatas(self):
         """Initialize a basic Manuskript project."""
